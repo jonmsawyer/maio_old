@@ -1,4 +1,4 @@
 maio
 ====
 
-A web-based All-In-Media organizer ran locally on your machine
+A web-based All-In-One Media organizer ran locally on your machine
