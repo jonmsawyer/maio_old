@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<img src="{% url "app:get_file" image.id %}" />
+{% endblock content %}

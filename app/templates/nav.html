@@ -1,0 +1,74 @@
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <!-- Brand and toggle get grouped for better mobile display -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="{% url "app:home" %}"><strong>Maio</strong></a>
+  </div>
+
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav">
+      <li class="dropdown">
+        <a href="{% url "app:images_index" %}" class="dropdown-toggle" data-toggle="dropdown">Images <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="{% url "app:images_index" %}">Index</a></li>
+          <li><a href="#">Tags</a></li>
+          <li><a href="#">Playlists</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="{% url "app:audio_index" %}" class="dropdown-toggle" data-toggle="dropdown">Audio <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="{% url "app:audio_index" %}">Index</a></li>
+          <li><a href="#">Tags</a></li>
+          <li><a href="#">Playlists</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="{% url "app:videos_index" %}" class="dropdown-toggle" data-toggle="dropdown">Videos <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="{% url "app:videos_index" %}">Index</a></li>
+          <li><a href="#">Tags</a></li>
+          <li><a href="#">Playlists</a></li>
+        </ul>
+      </li>
+    </ul>
+    <form class="navbar-form navbar-right" role="search">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search">
+      </div>
+      <button type="submit" class="btn btn-success">Go!</button>
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Statistics <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Dashboard</a></li>
+          <li class="divider"></li>
+          <li><a href="#">Images</a></li>
+          <li><a href="#">Audio</a></li>
+          <li><a href="#">Videos</a></li>
+          <li class="divider"></li>
+          <li><a href="#">Console</a></li>
+          <li><a href="#">Logs</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">How to use Maio</a></li>
+          <li><a href="#">Contributing to Maio</a></li>
+          <li><a href="#">Extending Maio</a></li>
+          <li><a href="#">Hacking Maio</a></li>
+          <li><a href="#">Report a bug!</a></li>
+          <li><a href="#">About Maio</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div><!-- /.navbar-collapse -->
+</nav>

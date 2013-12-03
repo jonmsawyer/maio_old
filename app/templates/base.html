@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Maio: Media All-in-One">
+    <meta name="author" content="Jonathan Sawyer &lt;jonmsawyer(@)gmail.com&gt;">
+    <meta name="contributors" content="Travis Veazey &lt;travis(@)kromey.us&gt;">
+    <link rel="shortcut icon" href="{{ STATIC_URL }}ico/favicon.png">
+
+    <title>Maio: Media All-in-One</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ STATIC_URL }}css/bootstrap-custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="{{ STATIC_URL }}js/html5shiv.js"></script>
+      <script src="{{ STATIC_URL }}js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+{% include 'nav.html' %}
+
+{% block content %}No content available{% endblock content %}
+
+{% include 'footer.html' %}
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ STATIC_URL }}js/jquery.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+  </body>
+</html>

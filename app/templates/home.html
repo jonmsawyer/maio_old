@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Maio: Media All-in-One</h1>
+        <p>Maio is a web-based image, audio, and video app that allows you to effeciently sort hundreds
+        of thousands of images, songs, and videos. It is Open Source, free, and out there for the world
+        to see.</p>
+        <p><a class="btn btn-primary btn-lg" role="button" href="https://github.com/jonmsawyer/maio/fork" target="_new">Fork Maio on Github! &raquo;</a></p>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Images</h2>
+          <p>Image statistics here.</p>
+          <p><a class="btn btn-success" href="{% url "app:images_index" %}" role="button">Go to Images &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Audio</h2>
+          <p>Audio statistics here.</p>
+          <p><a class="btn btn-warning" href="#" role="button">Go to Audio &raquo;</a></p>
+       </div>
+        <div class="col-md-4">
+          <h2>Video</h2>
+          <p>Video statistics here.</p>
+          <p><a class="btn btn-danger" href="#" role="button">Go to Videos &raquo;</a></p>
+        </div>
+      </div>
+    </div> <!-- /container -->
+{% endblock content %}

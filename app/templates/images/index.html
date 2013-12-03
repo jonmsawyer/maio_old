@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  table { width: auto; margin: 0 auto; border: 1px solid black; }
+  table td { border: 1px solid black; }
+  .row1 { background-color: #eee; }
+</style>
+
+<table>
+<tr>
+    <th>Name</th>
+    <th>Rating</th>
+    <th>Views</th>
+    <th>Bytes</th>
+</tr>
+{% for file in files %}
+<tr class="{% cycle 'row1' 'row2' %}">
+    <td><a href="{% url "app:images_view" file.id %}">{{ file.file_name }}</a></td>
+    <td>{{ file.rating }}</td>
+    <td>{{ file.views }}</td>
+    <td>{{ file.size }} B</td>
+</tr>
+{% empty %}
+<tr><td colspan="3">No images in the database.</td></tr>
+{% endfor %}
+</table>
+{% endblock content %}
