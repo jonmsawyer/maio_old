@@ -2,12 +2,16 @@
 {% block content %}
 <style>
   table { width: auto; margin: 0 auto; border: 1px solid black; }
-  table td { border: 1px solid black; }
+  table td, table th { border: 1px solid black; }
+  table th { text-align: center; padding: }
   .row1 { background-color: #eee; }
 </style>
 
-<table>
+<table style="background-color: #fff;">
 <tr>
+    <th>#</th>
+    <th>Info</th>
+    <th><input type="checkbox"></th>
     <th>Name</th>
     <th>Rating</th>
     <th>Views</th>
@@ -15,13 +19,16 @@
 </tr>
 {% for file in files %}
 <tr class="{% cycle 'row1' 'row2' %}">
-    <td><a href="{% url "app:images_view" file.id %}">{{ file.file_name }}</a></td>
+    <td>{{ forloop.counter }}</td>
+    <td><span class="badge">T</span> <span class="badge">&nbsp;I&nbsp;</span></td>
+    <td><input type="checkbox" name="bulk_edit" value="{{ file.id }}"></td>
+    <td><a href="{% url "app:images_view" %}#{{ file.id }}">{{ file.file_name }}</a></td>
     <td>{{ file.rating }}</td>
     <td>{{ file.views }}</td>
     <td>{{ file.size }} B</td>
 </tr>
 {% empty %}
-<tr><td colspan="3">No images in the database.</td></tr>
+<tr><td colspan="7">No images in the database.</td></tr>
 {% endfor %}
 </table>
 {% endblock content %}

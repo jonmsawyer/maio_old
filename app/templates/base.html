@@ -22,9 +22,11 @@
       <script src="{{ STATIC_URL }}js/html5shiv.js"></script>
       <script src="{{ STATIC_URL }}js/respond.min.js"></script>
     <![endif]-->
+{% block stylesheets %}{% endblock stylesheets %}
+{% block styles %}{% endblock styles %}
   </head>
 
-  <body>
+  <body class="navbar-inverse">
 
 {% include 'nav.html' %}
 
@@ -32,10 +34,9 @@
 
 {% include 'footer.html' %}
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     <script src="{{ STATIC_URL }}js/jquery.js"></script>
     <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+{% block javascripts %}{% endblock javascripts %}
+{% block scripts %}{% endblock scripts %}
   </body>
 </html>

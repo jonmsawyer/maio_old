@@ -1,5 +1,177 @@
 {% extends 'base.html' %}
 
+{% block styles %}
+<style>
+img#view_image { display: block; margin: 0 auto; }
+div#img_container {  }
+div#img_panel { float: right; width: 300px; margin: 0;
+                background-color: #303030; color: white; }
+div#img_controls_container { text-align: center; margin-top: 8px; }
+div#img_count_stats { text-align: center; margin-top: 8px; }
+</style>
+{% endblock styles %}
+
+{% block javascripts %}
+<script src="{{ STATIC_URL }}js/imagesloaded.pkgd.min.js"></script>
+{% endblock javascripts %}
+
+{% block scripts %}
+<script>
+function triggerImageResize() {
+    var image_height = $('#view_image').height();
+    var image_width = $('#view_image').width();
+    var image_aspectratio = $('#view_image').attr('data-aspectratio');
+    var div_height = $('#img_container').height();
+    var div_width = $('#img_container').width();
+    var div_aspectratio = div_width / div_height;
+    var img = $('#view_image');
+    var div = $('#img_container');
+    if (div_aspectratio > image_aspectratio) {
+        img.width('');
+        img.height(div.height()-1);
+    }
+    else {
+        img.height('');
+        img.width(div.width()-1);
+    }
+}
+
+function setImageContainerHeight(callback) {
+    var height_offset = 52;
+    var width_offset = 300;
+    $('#img_container').height($(window).height() - height_offset);
+    $('#img_container').width($(window).width() - width_offset);
+
+    $('#img_panel').height($(window).height() - height_offset);
+
+    if (callback) { callback(); }
+}
+
+function getHashImage(e) {
+    // Set the height and width of the image container
+    setImageContainerHeight(triggerImageResize);
+    
+    var hash = window.location.hash.substring(1);
+
+    $('#view_image').attr("src", "/get/"+hash).imagesLoaded(function() {
+        var img = $('#view_image');
+        img.attr("data-height", img.height());
+        img.attr("data-width", img.width());
+        img.attr("data-aspectratio", img.width()/img.height());
+        img.attr("data-id", hash);
+        setImageContainerHeight(triggerImageResize);
+    });
+    $.ajax({
+        url: '/images/getthis/'+hash,
+        type: 'GET',
+        cache: false,
+        success: function(ob) {
+            $('#img_number').html(ob.number);
+            $('#img_count').html(ob.count);
+            $('#img_name').html(ob.name);
+            setImageContainerHeight(triggerImageResize);
+        },
+    });
+}
+
+window.onhashchange = getHashImage;
+
+var image_loading = false;
+function getPrevImage() {
+   if (!image_loading) {
+       image_loading = true;
+       $.ajax({
+           url: '/images/getprev/'+$('#view_image').attr('data-id'),
+           type: 'GET',
+           cache: false,
+           success: function(ob) {
+               window.location.hash = ob.id;
+               image_loading = false;
+           }
+       });
+   }
+}
+
+function getNextImage() {
+    if (!image_loading) {
+        image_loading = true;
+        $.ajax({
+            url: '/images/getnext/'+$('#view_image').attr('data-id'),
+            type: 'GET',
+            cache: false,
+            success: function(ob) {
+                window.location.hash = ob.id;
+                image_loading = false;
+            }
+        });
+    }
+}
+
+$(document).ready(function() {
+
+    // Grab the hash tag value and load the appropriate image
+    var hash = window.location.hash.substring(1);
+    if (hash == "") {
+        var hash_arr = window.location.href.split('/')
+        hash = hash_arr[hash_arr.length - 1];
+        if (hash.length == 36) {
+            window.location.href = "/images/view#" + hash;
+        }
+        return;
+    }
+    
+    getHashImage();
+
+    $(".img-controls-forward").click(getNextImage);
+    $(".img-controls-backward").click(getPrevImage);
+    $(".img-controls-play").click(function() {
+        console.log('play images');
+    });
+});
+
+$(window).resize(function() {
+    setImageContainerHeight();
+    triggerImageResize();
+});
+
+$(document).keydown(function(e) {
+    switch(e.which) {
+    case 37: // left
+       getPrevImage(); 
+    break;
+    
+    case 38: // up
+    break;
+    
+    case 39: // right
+        getNextImage();
+    break;
+    
+    case 40: // down
+    break;
+    
+    default: return; // exit this handler for other keys
+    }
+    
+    e.preventDefault(); // prevent the default action (scroll / move caret)
+});
+</script>
+{% endblock scripts %}
+
+
 {% block content %}
-<img src="{% url "app:get_file" image.id %}" />
+<div id="img_panel" class="panel">
+    <div id="img_controls_container">
+        <div id="img_controls" class="btn-group btn-group-lg pagination-center">
+            <button type="button" class="btn btn-default img-controls-backward"><span class="glyphicon glyphicon-backward"> </span></button>
+            <button type="button" class="btn btn-default img-controls-play"><span class="glyphicon glyphicon-play"> </span></button>
+            <button type="button" class="btn btn-default img-controls-forward"><span class="glyphicon glyphicon-forward"> </span></button>
+        </div>
+    </div>
+    <div id="img_count_stats">
+        <div id="img_name"> </div>
+        <span id="img_number" class="tag">0</span> of <span id="img_count">0</span> images
+    </div>
+</div>
+<div id="img_container" class="navbar-inverse"><img id="view_image"{% if image %} src="{% url "app:get_file" image.id %}"{% endif %} /></div>
 {% endblock content %}
