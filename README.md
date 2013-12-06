@@ -71,6 +71,15 @@ MAIO_SETTINGS = {
 
 Change this to a path you have read/write access to.
 
+### Sync the database tables!
+
+ * Now run a Django command to create your database structure:
+
+~~~
+$ cd /path/to/maio
+$ ./manage.py syncdb
+~~~
+
 ### Get Images! (Audio and Video not supported yet)
 
  * First create your thumbnail directory (it does not already exist):
