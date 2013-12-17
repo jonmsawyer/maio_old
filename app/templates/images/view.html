@@ -17,15 +17,17 @@ div#img_count_stats { text-align: center; margin-top: 8px; }
 
 {% block scripts %}
 <script>
-function triggerImageResize() {
-    var image_height = $('#view_image').height();
-    var image_width = $('#view_image').width();
-    var image_aspectratio = $('#view_image').attr('data-aspectratio');
-    var div_height = $('#img_container').height();
-    var div_width = $('#img_container').width();
-    var div_aspectratio = div_width / div_height;
-    var img = $('#view_image');
+function triggerImageResize(img) {
+    if (!img) {
+        img = $('#view_image');
+    }
     var div = $('#img_container');
+
+    var image_height = img.height();
+    var image_width = img.width();
+    var image_aspectratio = img.attr('data-aspectratio');
+    var div_aspectratio = div.width() / div.height();
+
     if (div_aspectratio > image_aspectratio) {
         img.width('');
         img.height(div.height()-1);
@@ -38,7 +40,7 @@ function triggerImageResize() {
 
 function setImageContainerHeight(callback) {
     var height_offset = 52;
-    var width_offset = 300;
+    var width_offset = 304;
     $('#img_container').height($(window).height() - height_offset);
     $('#img_container').width($(window).width() - width_offset);
 
@@ -49,29 +51,34 @@ function setImageContainerHeight(callback) {
 
 function getHashImage(e) {
     // Set the height and width of the image container
-    setImageContainerHeight(triggerImageResize);
+    setImageContainerHeight();
     
     var hash = window.location.hash.substring(1);
 
-    $('#view_image').attr("src", "/get/"+hash).imagesLoaded(function() {
-        var img = $('#view_image');
-        img.attr("data-height", img.height());
-        img.attr("data-width", img.width());
-        img.attr("data-aspectratio", img.width()/img.height());
-        img.attr("data-id", hash);
-        setImageContainerHeight(triggerImageResize);
-    });
-    $.ajax({
-        url: '/images/getthis/'+hash,
-        type: 'GET',
-        cache: false,
-        success: function(ob) {
-            $('#img_number').html(ob.number);
-            $('#img_count').html(ob.count);
-            $('#img_name').html(ob.name);
-            setImageContainerHeight(triggerImageResize);
-        },
-    });
+    var img = new Image();
+    img.onload = function(e) {
+        this.setAttribute("data-height", this.height);
+        this.setAttribute("data-width", this.width);
+        this.setAttribute("data-aspectratio", this.width/this.height);
+        this.setAttribute("data-id", hash);
+        this.setAttribute("id", "view_image");
+
+        $.ajax({
+            url: '/images/getthis/'+hash,
+            type: 'GET',
+            cache: false,
+            success: function(ob) {
+                $('#img_number').html(ob.number);
+                $('#img_count').html(ob.count);
+                $('#img_name').html(ob.name);
+            },
+        });
+        $('#view_image').replaceWith(img);
+        $('#view_image').hide();
+        triggerImageResize();
+        $('#view_image').show();
+    };
+    img.src = '/get/'+hash;
 }
 
 window.onhashchange = getHashImage;
