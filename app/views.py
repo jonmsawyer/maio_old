@@ -1,6 +1,7 @@
 import json
 import base64
 import pickle
+import random
 
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
@@ -49,6 +50,29 @@ def images_getthis(request, id):
     context = {
         'id': id,
         'number': id_list.index(id) + 1,
+        'count': len(id_list),
+        'name': obj.file_path.split('/')[-1],
+    }
+    response = HttpResponse(json.dumps(context), content_type='application/json')
+    return response
+
+def images_getrandom(request, id):
+    query = __load_session_query(request, File.objects.all())
+    id_list = list(query.values_list('id', flat=True))
+    try:
+        rand_max = len(id_list)
+        rand_min = 0
+        next_id = id_list[random.randrange(rand_min, rand_max)]
+        number = id_list.index(id) + 1
+    except IndexError:
+        # does not take into account a list of size 0, todo: test!
+        next_id = id_list[0]
+        number = 1
+
+    obj = File.objects.get(id=next_id)
+    context = {
+        'id': obj.id,
+        'number': number,
         'count': len(id_list),
         'name': obj.file_path.split('/')[-1],
     }

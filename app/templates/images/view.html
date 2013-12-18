@@ -8,6 +8,7 @@ div#img_panel { float: right; width: 300px; margin: 0;
                 background-color: #303030; color: white; }
 div#img_controls_container { text-align: center; margin-top: 8px; }
 div#img_count_stats { text-align: center; margin-top: 8px; }
+div#img_random_selector { text-align: center; margin-top: 8px; }
 </style>
 {% endblock styles %}
 
@@ -83,31 +84,110 @@ function getHashImage(e) {
 
 window.onhashchange = getHashImage;
 
+function parseSearch() {
+    window.searchArgs = {}
+    var search = window.location.search.substring(1);
+    if (search === "") { return; }
+    var list = search.split('&');
+    jQuery.each(list, function(index, el) {
+        var el_arr = el.split('=');
+        if (el_arr.length == 1) {
+            window.searchArgs[el_arr[0]] = null;
+        }
+        else if (el_arr.length == 2) {
+            window.searchArgs[el_arr[0]] = el_arr[1];
+        }
+    });
+}
+
+function getSearch(key) {
+    try {
+        return window.searchArgs[key];
+    } catch (e) {
+        return false;
+    }
+}
+
+function setSearch(key, value) {
+    try {
+        if (key !== null && key !== undefined) {
+            window.searchArgs[key] = value;
+            return true;
+        }
+        return false;
+    } catch (e) {
+        return false;
+    }
+}
+
+function unsetSearch(key) {
+    try {
+        delete window.searchArgs[key];
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function searchEncode() {
+    var search = "";
+    for (var key in window.searchArgs) {
+        var val = window.searchArgs[key];
+        if (val !== undefined && val !== null) {
+            search = search + '&' + key + "=" + val;
+        }
+        else {
+            search = search + '&' + key;
+        }
+    }
+    return search.substring(1);
+}
+
 var image_loading = false;
 function getPrevImage() {
-   if (!image_loading) {
-       image_loading = true;
-       $.ajax({
-           url: '/images/getprev/'+$('#view_image').attr('data-id'),
-           type: 'GET',
-           cache: false,
-           success: function(ob) {
-               window.location.hash = ob.id;
-               image_loading = false;
-           }
-       });
-   }
+    if (!image_loading) {
+        image_loading = true;
+        if (window.getRandom) {
+            var urlpart = "getrandom";
+        }
+        else {
+            var urlpart = "getprev";
+        }
+        $.ajax({
+            url: '/images/'+urlpart+'/'+$('#view_image').attr('data-id'),
+            type: 'GET',
+            cache: false,
+            success: function(ob) {
+                window.location.hash = ob.id;
+                if (window.playId) {
+                    clearInterval(window.playId);
+                    window.playId = setInterval(getNextImage, window.playInterval);
+                }
+                image_loading = false;
+            }
+        });
+    }
 }
 
 function getNextImage() {
     if (!image_loading) {
         image_loading = true;
+        if (window.getRandom) {
+            var urlpart = "getrandom";
+        }
+        else {
+            var urlpart = "getnext";
+        }
         $.ajax({
-            url: '/images/getnext/'+$('#view_image').attr('data-id'),
+            url: '/images/'+urlpart+'/'+$('#view_image').attr('data-id'),
             type: 'GET',
             cache: false,
             success: function(ob) {
                 window.location.hash = ob.id;
+                if (window.playId) {
+                    clearInterval(window.playId);
+                    window.playId = setInterval(getNextImage, window.playInterval);
+                }
                 image_loading = false;
             }
         });
@@ -116,17 +196,41 @@ function getNextImage() {
 
 function playImages() {
     if (window.playId) { return; }
-    window.location.search = 'play=1';
-    window.playId = setInterval(getNextImage, 5000);
+    setSearch('play', '1');
+    window.location.search = searchEncode();
+    window.playId = setInterval(getNextImage, window.playInterval);
     $('#img_controls .img-controls-pause').show();
     $('#img_controls .img-controls-play').hide();
+}
+
+function randomizeImages() {
+    setSearch('random', '1');
+    window.location.search = searchEncode();
+    window.getRandom = true;
+}
+
+function unrandomizeImages() {
+    unsetSearch('random');
+    window.location.search = searchEncode();
+    window.getRandom = false;
+}
+
+function checkRandomBox() {
+    var rand = $("#img_random");
+    if (rand.is(":checked")) {
+        randomizeImages();
+    }
+    else {
+        unrandomizeImages();
+    }
 }
 
 function pauseImages() {
     if (window.playId) {
         clearInterval(window.playId);
+        unsetSearch('play');
         window.playId = null;
-        window.location.search = '';
+        window.location.search = searchEncode();
         $('#img_controls .img-controls-pause').hide();
         $('#img_controls .img-controls-play').show();
     }
@@ -151,23 +255,27 @@ $(document).ready(function() {
     $("#img_controls .img-controls-backward").click(getPrevImage);
     $("#img_controls .img-controls-play").click(playImages);
     $("#img_controls .img-controls-pause").click(pauseImages);
+    $("#img_random").click(checkRandomBox);
+    
+    parseSearch();
+    var play = getSearch('play');
+    var random = getSearch('random');
 
-    var search = window.location.search.substring(1);
-    var args = search.split('&');
-    var play = null;
-    var random = null;
-    jQuery.each(args, function(index, el) {
-        var arg_arr = el.split('=');
-        switch(arg_arr[0]) {
-        case 'play': play = true; break;
-        case 'random': random = true; break;
-        default: break;
-        }
-    });
-
+    window.playInterval = 5000;
     if (play) {
         playImages();
     }
+
+    if (random) {
+        window.getRandom = true;
+        $('#img_random').prop('checked', true);
+        randomizeImages();
+    }
+    else {
+        window.getRandom = false;
+        $('#img_random').prop('checked', false);
+    }
+
 });
 
 $(window).resize(function() {
@@ -189,6 +297,18 @@ $(document).keydown(function(e) {
     break;
     
     case 40: // down
+    break;
+
+    case 80: // p
+        var play = getSearch('play');
+        if (play) { pauseImages(); }
+        else { playImages(); }
+    break;
+
+    case 82: // r
+        var random = getSearch('random');
+        if (random) { unrandomizeImages(); }
+        else { randomizeImages(); }
     break;
     
     default: return; // exit this handler for other keys
@@ -213,6 +333,10 @@ $(document).keydown(function(e) {
     <div id="img_count_stats">
         <div id="img_name"> </div>
         <span id="img_number" class="tag">0</span> of <span id="img_count">0</span> images
+    </div>
+    <div id="img_random_selector">
+        <label for="img_random">Random?</label>
+        <input type="checkbox" name="img_random" id="img_random" />
     </div>
 </div>
 <div id="img_container" class="navbar-inverse"><img id="view_image"{% if image %} src="{% url "app:get_file" image.id %}"{% endif %} /></div>
