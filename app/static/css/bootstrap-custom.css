@@ -12,3 +12,5 @@ footer {
     color: gray;
     text-align: center;
 }
+
+.container .row { color: white; }

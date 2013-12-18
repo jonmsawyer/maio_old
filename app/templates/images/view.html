@@ -73,8 +73,8 @@ function getHashImage(e) {
                 $('#img_name').html(ob.name);
             },
         });
-        $('#view_image').replaceWith(img);
         $('#view_image').hide();
+        $('#view_image').replaceWith(img);
         triggerImageResize();
         $('#view_image').show();
     };
@@ -114,6 +114,24 @@ function getNextImage() {
     }
 }
 
+function playImages() {
+    if (window.playId) { return; }
+    window.location.search = 'play=1';
+    window.playId = setInterval(getNextImage, 5000);
+    $('#img_controls .img-controls-pause').show();
+    $('#img_controls .img-controls-play').hide();
+}
+
+function pauseImages() {
+    if (window.playId) {
+        clearInterval(window.playId);
+        window.playId = null;
+        window.location.search = '';
+        $('#img_controls .img-controls-pause').hide();
+        $('#img_controls .img-controls-play').show();
+    }
+}
+
 $(document).ready(function() {
 
     // Grab the hash tag value and load the appropriate image
@@ -129,11 +147,27 @@ $(document).ready(function() {
     
     getHashImage();
 
-    $(".img-controls-forward").click(getNextImage);
-    $(".img-controls-backward").click(getPrevImage);
-    $(".img-controls-play").click(function() {
-        console.log('play images');
+    $("#img_controls .img-controls-forward").click(getNextImage);
+    $("#img_controls .img-controls-backward").click(getPrevImage);
+    $("#img_controls .img-controls-play").click(playImages);
+    $("#img_controls .img-controls-pause").click(pauseImages);
+
+    var search = window.location.search.substring(1);
+    var args = search.split('&');
+    var play = null;
+    var random = null;
+    jQuery.each(args, function(index, el) {
+        var arg_arr = el.split('=');
+        switch(arg_arr[0]) {
+        case 'play': play = true; break;
+        case 'random': random = true; break;
+        default: break;
+        }
     });
+
+    if (play) {
+        playImages();
+    }
 });
 
 $(window).resize(function() {
@@ -172,6 +206,7 @@ $(document).keydown(function(e) {
         <div id="img_controls" class="btn-group btn-group-lg pagination-center">
             <button type="button" class="btn btn-default img-controls-backward"><span class="glyphicon glyphicon-backward"> </span></button>
             <button type="button" class="btn btn-default img-controls-play"><span class="glyphicon glyphicon-play"> </span></button>
+            <button type="button" class="btn btn-default img-controls-pause" style="display: none;"><span class="glyphicon glyphicon-pause"> </span></button>
             <button type="button" class="btn btn-default img-controls-forward"><span class="glyphicon glyphicon-forward"> </span></button>
         </div>
     </div>
