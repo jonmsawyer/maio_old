@@ -9,6 +9,7 @@ div#img_panel { float: right; width: 300px; margin: 0;
 div#img_controls_container { text-align: center; margin-top: 8px; }
 div#img_count_stats { text-align: center; margin-top: 8px; }
 div#img_random_selector { text-align: center; margin-top: 8px; }
+div#img_name { max-width: 298px; overflow: hidden; }
 </style>
 {% endblock styles %}
 
@@ -148,7 +149,7 @@ function getPrevImage() {
     if (!image_loading) {
         image_loading = true;
         if (window.getRandom) {
-            var urlpart = "getrandom";
+            var urlpart = "getrandomprev";
         }
         else {
             var urlpart = "getprev";
@@ -173,7 +174,7 @@ function getNextImage() {
     if (!image_loading) {
         image_loading = true;
         if (window.getRandom) {
-            var urlpart = "getrandom";
+            var urlpart = "getrandomnext";
         }
         else {
             var urlpart = "getnext";
@@ -210,9 +211,23 @@ function randomizeImages() {
 }
 
 function unrandomizeImages() {
-    unsetSearch('random');
-    window.location.search = searchEncode();
-    window.getRandom = false;
+    $.ajax({
+        url: '/images/unset_random/',
+        type: 'GET',
+        cache: false,
+        success: function(ob) {
+            console.log(ob);
+            if (ob.ok) {
+                unsetSearch('random');
+                window.location.search = searchEncode();
+                window.getRandom = false;
+            }
+            else {
+                var rand = $("#img_random");
+                rand.prop('checked', true);
+            }
+        },
+    });
 }
 
 function checkRandomBox() {

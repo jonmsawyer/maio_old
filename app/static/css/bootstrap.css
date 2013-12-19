@@ -7096,8 +7096,3 @@ td.visible-print {
     display: none !important;
   }
 }
-
-div#img_name {
-	max-width: 298px;
-	overflow: hidden;
-}
