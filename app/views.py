@@ -65,15 +65,35 @@ def images_view(request, id=None):
     context = {'image': image}
     return render(request, 'images/view.html', context)
 
+def images_rate(request, id, rating):
+    try:
+        obj = File.objects.get(id=id)
+        rating = int(rating)
+        if rating:
+            obj.rating = rating
+        else:
+            obj.rating = None
+        obj.save()
+        context = {'ok': rating}
+    except:
+        context = {'error': 'Rating not set'}
+    response = HttpResponse(json.dumps(context), content_type="application/json")
+    return response
+
 def images_getthis(request, id):
     query = __load_session_query(request, File.objects.all())
     id_list = list(query.values_list('id', flat=True))
     obj = File.objects.get(id=id)
+    try:
+        rating = int(obj.rating)
+    except TypeError:
+        rating = 0
     context = {
         'id': id,
         'number': id_list.index(id) + 1,
         'count': len(id_list),
         'name': obj.file_path.split('/')[-1],
+        'rating': rating,
     }
     response = HttpResponse(json.dumps(context), content_type='application/json')
     return response

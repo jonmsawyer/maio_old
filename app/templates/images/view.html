@@ -10,6 +10,16 @@ div#img_controls_container { text-align: center; margin-top: 8px; }
 div#img_count_stats { text-align: center; margin-top: 8px; }
 div#img_random_selector { text-align: center; margin-top: 8px; }
 div#img_name { max-width: 298px; overflow: hidden; }
+div#star_container { text-align: center; }
+div#star_container .none:hover { cursor: pointer; color: #DBA901; }
+div#star_container .star { width: 16px; }
+div#star_container .star.gray {
+    -moz-filter: grayscale(100%);
+    -webkit-filter: grayscale(100%);
+    -ms-filter: grayscale(100%);
+    -o-filter: grayscale(100%);
+    filter: grayscale(100%);
+}
 </style>
 {% endblock styles %}
 
@@ -73,6 +83,7 @@ function getHashImage(e) {
                 $('#img_number').html(ob.number);
                 $('#img_count').html(ob.count);
                 $('#img_name').html(ob.name);
+                setStarRating(ob.rating);
             },
         });
         $('#view_image').hide();
@@ -216,7 +227,6 @@ function unrandomizeImages() {
         type: 'GET',
         cache: false,
         success: function(ob) {
-            console.log(ob);
             if (ob.ok) {
                 unsetSearch('random');
                 window.location.search = searchEncode();
@@ -251,6 +261,41 @@ function pauseImages() {
     }
 }
 
+function setStarRating(num) {
+    $("#star_container .star").addClass("gray");
+    for (var i = 0; i < num+1; i++) {
+        if (i > num) {
+            return;
+        }
+        var name;
+        if (i == 0) { name = 'none'; }
+        if (i == 1) { name = 'one'; }
+        if (i == 2) { name = 'two'; }
+        if (i == 3) { name = 'three'; }
+        if (i == 4) { name = 'four'; }
+        if (i == 5) { name = 'five'; }
+        
+        $("#star_container .star."+name).removeClass("gray");
+    }
+}
+
+function clickStar(num) {
+    if (num < 0 || num > 5) {
+        return false;
+    }
+    var strNum = num.toString();
+    $.ajax({
+        url: '/images/rate/'+$('#view_image').attr('data-id')+'/'+strNum,
+        type: 'GET',
+        cache: false,
+        success: function(ob) {
+            if (ob.ok !== undefined && ob.ok == strNum) {
+                setStarRating(num);
+            }
+        },
+    });
+}
+
 $(document).ready(function() {
 
     // Grab the hash tag value and load the appropriate image
@@ -271,6 +316,12 @@ $(document).ready(function() {
     $("#img_controls .img-controls-play").click(playImages);
     $("#img_controls .img-controls-pause").click(pauseImages);
     $("#img_random").click(checkRandomBox);
+    $("#star_container .none").click(function() { clickStar(0); });
+    $("#star_container .one").click(function() { clickStar(1); });
+    $("#star_container .two").click(function() { clickStar(2); });
+    $("#star_container .three").click(function() { clickStar(3); });
+    $("#star_container .four").click(function() { clickStar(4); });
+    $("#star_container .five").click(function() { clickStar(5) });
     
     parseSearch();
     var play = getSearch('play');
@@ -314,6 +365,30 @@ $(document).keydown(function(e) {
     case 40: // down
     break;
 
+    case 48: // 0
+        clickStar(0);
+    break;
+
+    case 49: // 1
+        clickStar(1);
+    break;
+
+    case 50: // 2
+        clickStar(2);
+    break;
+
+    case 51: // 3
+        clickStar(3);
+    break;
+
+    case 52: // 4
+        clickStar(4);
+    break;
+
+    case 53: // 5
+        clickStar(5);
+    break;
+
     case 80: // p
         var play = getSearch('play');
         if (play) { pauseImages(); }
@@ -352,6 +427,14 @@ $(document).keydown(function(e) {
     <div id="img_random_selector">
         <label for="img_random">Random?</label>
         <input type="checkbox" name="img_random" id="img_random" />
+    </div>
+    <div id="star_container">
+        <span class="none">None</span>
+        <img class="star gray one selected" src="{{ STATIC_URL }}img/star.png" />
+        <img class="star gray two" src="{{ STATIC_URL }}img/star.png" />
+        <img class="star gray three" src="{{ STATIC_URL }}img/star.png" />
+        <img class="star gray four" src="{{ STATIC_URL }}img/star.png" />
+        <img class="star gray five" src="{{ STATIC_URL }}img/star.png" />
     </div>
 </div>
 <div id="img_container" class="navbar-inverse"><img id="view_image"{% if image %} src="{% url "app:get_file" image.id %}"{% endif %} /></div>
