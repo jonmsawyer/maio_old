@@ -1,4 +1,40 @@
 {% extends 'base.html' %}
+
+{% block scripts %}
+<script>
+function setPage(num) {
+    window.location.search = 'page='+num;
+}
+
+$(document).keydown(function(e) {
+    switch(e.which) {
+    case 37: // left
+        {% if files.has_previous %}
+        setPage({{ files.previous_page_number }});
+        {% endif %}
+    break;
+    
+    case 38: // up
+        setPage(1);
+    break;
+    
+    case 39: // right
+        {% if files.has_next %}
+        setPage({{ files.next_page_number}});
+        {% endif %}
+    break;
+    
+    case 40: // down
+        setPage({{ files.paginator.num_pages }});
+    break;
+
+    default: return; // exit this handler for other keys
+    }
+    
+    e.preventDefault(); // prevent the default action (scroll / move caret)
+});
+</script>
+{% endblock scripts %}
 {% block content %}
 <style>
   table { width: auto; margin: 0 auto; border: 1px solid black; }
@@ -7,7 +43,7 @@
   .row1 { background-color: #eee; }
 </style>
 
-<table style="background-color: #fff;">
+<table style="background-color: #fff; margin-bottom: 100px;">
 <tr>
     <th>#</th>
     <th>Info</th>
@@ -19,7 +55,7 @@
 </tr>
 {% for file in files %}
 <tr class="{% cycle 'row1' 'row2' %}">
-    <td>{{ forloop.counter }}</td>
+    <td>{{ file.num }}</td>
     <td><span class="badge">T</span> <span class="badge">&nbsp;I&nbsp;</span></td>
     <td><input type="checkbox" name="bulk_edit" value="{{ file.id }}"></td>
     <td><a href="{% url "app:images_view" %}#{{ file.id }}">{{ file.file_name }}</a></td>
@@ -31,4 +67,27 @@
 <tr><td colspan="7">No images in the database.</td></tr>
 {% endfor %}
 </table>
+<div style="text-align: center; width: 100%; position: fixed; bottom: 0; background-color: #222;">
+<ul class="pagination pagination-sm" style="margin: 5px auto 0 auto; width: auto;">
+    {% if files.has_previous %}
+    <li class=""><a href="?page=1">&laquo;&laquo;</a></li>
+    <li class=""><a href="?page={{ files.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+    <li class="disabled"><a href="#">&laquo;&laquo;</a></li>
+    <li class="disabled"><a href="#">&laquo;</a></li>
+    {% endif %}
+
+    {% for page in page_range %}
+    <li class="{% if page == files.number %}active{% endif %} {% if page == '...' %}disabled{% endif %}"><a href="{% if page != '...' %}?page={{ page }}{% else %}#{% endif %}">{{ page }}</a></li>
+    {% endfor %}
+
+    {% if files.has_next %}
+    <li class=""><a href="?page={{ files.next_page_number }}">&raquo;</a></li>
+    <li class=""><a href="?page={{ files.paginator.num_pages }}">&raquo;&raquo;</a></li>
+    {% else %}
+    <li class="disabled"><a href="#">&raquo;</a></li>
+    <li class="disabled"><a href="#">&raquo;&raquo;</a></li>
+    {% endif %}
+</ul>
+</div>
 {% endblock content %}

@@ -6,6 +6,7 @@ import random
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, Http404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from app.models import File
 
@@ -55,7 +56,53 @@ def images_index(request):
         del request.session['random_list']
     except KeyError:
         pass
-    context = {'files': query}
+    per_page = 24
+    paginator = Paginator(query, per_page)
+    page = request.GET.get('page')
+    try:
+        files = paginator.page(page)
+    except PageNotAnInteger:
+        files = paginator.page(1)
+        page = 1
+    except EmptyPage:
+        files = paginator.page(paginator.num_pages)
+        page = paginator.num_pages
+    page = int(page)
+
+    page_range = []
+    threshold = 10
+    threshold_size = (threshold*2) + 1
+
+    # build initial page range list
+    for i in xrange(1, paginator.num_pages+1):
+        if i+threshold >= page and i <= page:
+            page_range.append(i)
+        elif i-threshold <= page and i >= page:
+            page_range.append(i)
+
+    # if the length of page_range is less than the threshold size, add to it
+    if len(page_range) < threshold_size:
+        if page <= threshold:
+            i = page_range[-1]
+            while len(page_range) < threshold_size and i < paginator.num_pages:
+                i = i + 1
+                page_range.append(i)
+        else:
+            i = page_range[0]
+            while len(page_range) < threshold_size and i > 1:
+                i = i - 1
+                page_range.insert(0, i)
+    if page_range[0] != 1:
+        page_range.insert(0, '...')
+    if page_range[-1] != paginator.num_pages:
+        page_range.append('...')
+
+    i = per_page * (page-1) + 1
+    for f in files:
+        f.num = i
+        i = i + 1
+
+    context = {'files': files, 'page_range': page_range}
     return render(request, 'images/index.html', context)
 
 def images_view(request, id=None):
