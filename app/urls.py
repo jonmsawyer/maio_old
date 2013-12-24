@@ -14,6 +14,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
+    url(r'^get/(?P<tn>tn)/(?P<id>[a-zA-Z0-9-]{36})?', 'app.views.get_file', name='get_tn'),
     url(r'^get/(?P<id>[a-zA-Z0-9-]{36})?', 'app.views.get_file', name='get_file'),
     url(r'^videos/$', 'app.views.videos_index', name='videos_index'),
     url(r'^audio/$', 'app.views.audio_index', name='audio_index'),

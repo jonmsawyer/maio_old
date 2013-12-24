@@ -20,11 +20,11 @@ div#star_container .star.gray {
     -o-filter: grayscale(100%);
     filter: grayscale(100%);
 }
+div#views_container { text-align: center; margin-top: 8px; }
 </style>
 {% endblock styles %}
 
 {% block javascripts %}
-<script src="{{ STATIC_URL }}js/imagesloaded.pkgd.min.js"></script>
 {% endblock javascripts %}
 
 {% block scripts %}
@@ -58,7 +58,7 @@ function setImageContainerHeight(callback) {
 
     $('#img_panel').height($(window).height() - height_offset);
 
-    if (callback) { callback(); }
+    if (callback && typeof(v) == "function") { callback(); }
 }
 
 function getHashImage(e) {
@@ -83,6 +83,7 @@ function getHashImage(e) {
                 $('#img_number').html(ob.number);
                 $('#img_count').html(ob.count);
                 $('#img_name').html(ob.name);
+                $('#img_views').html(ob.views);
                 setStarRating(ob.rating);
             },
         });
@@ -435,6 +436,9 @@ $(document).keydown(function(e) {
         <img class="star gray three" src="{{ STATIC_URL }}img/star.png" />
         <img class="star gray four" src="{{ STATIC_URL }}img/star.png" />
         <img class="star gray five" src="{{ STATIC_URL }}img/star.png" />
+    </div>
+    <div id="views_container">
+        Views: <span id="img_views">0</span>
     </div>
 </div>
 <div id="img_container" class="navbar-inverse"><img id="view_image"{% if image %} src="{% url "app:get_file" image.id %}"{% endif %} /></div>

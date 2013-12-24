@@ -36,13 +36,17 @@ def home(request):
     context = {}
     return render(request, 'home.html', context)
 
-def get_file(request, id=None):
+def get_file(request, id=None, tn=None):
     f = get_object_or_404(File, pk=id)
     f_data = None
-    with open(f.file_path, 'rb') as fh:
-        f_data = fh.read()
+    if tn == 'tn':
+        with open(f.tn_path, 'rb') as fh:
+            f_data = fh.read()
+    else:
+        with open(f.file_path, 'rb') as fh:
+            f_data = fh.read()
     response = HttpResponse(f_data, content_type=f.mime_type)
-    response['Content-Disposition'] = 'attachment; filename="%s"' % (f.file_path.split('/')[-1],)
+    response['Content-Disposition'] = 'attachment; filename="tn_%s"' % (f.file_path.split('/')[-1],)
     try:
         f.views = f.views + 1
         f.save()
@@ -103,6 +107,8 @@ def images_index(request):
         i = i + 1
 
     context = {'files': files, 'page_range': page_range}
+    if request.GET.get('view') == 'list':
+        context['view'] = 'list'
     return render(request, 'images/index.html', context)
 
 def images_view(request, id=None):
@@ -141,6 +147,7 @@ def images_getthis(request, id):
         'count': len(id_list),
         'name': obj.file_path.split('/')[-1],
         'rating': rating,
+        'views': obj.views,
     }
     response = HttpResponse(json.dumps(context), content_type='application/json')
     return response
