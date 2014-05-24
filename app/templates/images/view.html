@@ -2,8 +2,19 @@
 
 {% block styles %}
 <style>
-img#view_image { display: block; margin: 0 auto; }
-div#img_container {  }
+html, body { overflow: hidden; }
+img#view_image {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+img#view_image.wide2 { display: block; margin: 0 auto; }
+img#view_image.tall2 { display: block; margin: auto 0; }
+div#img_container { position: relative; }
 div#img_panel { float: right; width: 300px; margin: 0;
                 background-color: #303030; color: white; }
 div#img_controls_container { text-align: center; margin-top: 8px; }
@@ -43,22 +54,26 @@ function triggerImageResize(img) {
     if (div_aspectratio > image_aspectratio) {
         img.width('');
         img.height(div.height()-1);
+        img.removeClass('tall').addClass('wide');
     }
     else {
         img.height('');
         img.width(div.width()-1);
+        img.removeClass('wide').addClass('tall');
     }
 }
 
 function setImageContainerHeight(callback) {
-    var height_offset = 52;
-    var width_offset = 304;
-    $('#img_container').height($(window).height() - height_offset);
-    $('#img_container').width($(window).width() - width_offset);
+    var height_offset = $('#main-navbar').height(); // /* main toolbar width */ 50;
+    var width_offset = $('#img_panel').width(); // /* img_panel width */ 300;
+    var window_width = $(window).width();
+    var window_height = $(window).height();
+    $('#img_container').height(window_height - height_offset);
+    $('#img_container').width(window_width - width_offset);
+    $('body').css({"padding-top": height_offset+"px"});
 
     $('#img_panel').height($(window).height() - height_offset);
-
-    if (callback && typeof(v) == "function") { callback(); }
+    if (callback && typeof(callback) == "function") { callback(); }
 }
 
 function getHashImage(e) {
@@ -346,8 +361,10 @@ $(document).ready(function() {
 });
 
 $(window).resize(function() {
+    var height_offset = $('#main-navbar').height(); // /* main toolbar width */ 50;
     setImageContainerHeight();
     triggerImageResize();
+    $('body').css({"padding-top": height_offset+"px"});
 });
 
 $(document).keydown(function(e) {
