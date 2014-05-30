@@ -1,5 +1,6 @@
 import os
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -11,13 +12,14 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'maio',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'maio',
         'PASSWORD': 'maio',
         'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
+        'OPTIONS': {'autocommit': True,},
     }
 }
 
@@ -93,13 +95,22 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    # Must be first
+    #'django.middleware.cache.UpdateCacheMiddleware',
+    # /First
+
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.contrib.auth.middleware.AuthenticationMiddleware',
+    #'django.contrib.messages.middleware.MessageMiddleware',
+
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Must be last
+    #'django.middleware.cache.FetchFromCacheMiddleware',
+    # /Last
 )
 
 ROOT_URLCONF = 'maio.urls'
@@ -114,11 +125,11 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
+    #'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.messages',
+    #'django.contrib.messages',
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
@@ -128,7 +139,19 @@ INSTALLED_APPS = (
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+SESSION_FILE_PATH = os.path.join(BASE_DIR, 'session')
+#SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+#SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+#SESSION_SAVE_EVERY_REQUEST = True
+
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#        'LOCATION': '127.0.0.1:11211',
+#        'TIMEOUT': 60*60*24*31,
+#    }
+#}
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -144,11 +167,27 @@ LOGGING = {
         }
     },
     'handlers': {
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            #'formatter': 'simple',
+        },
+        'log_file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
+            'maxBytes': '16777216', # 16megabytes
+            #'formatter': 'verbose'
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
     },
     'loggers': {
         'django.request': {
@@ -156,7 +195,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-    }
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
 }
 
 MAIO_SETTINGS = {
