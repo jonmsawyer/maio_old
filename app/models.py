@@ -41,7 +41,10 @@ class File(models.Model):
     media_length = models.PositiveIntegerField(null=True)
     date_added = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
-    
+
+    class Meta:
+        ordering = ['file_path']
+
     @staticmethod
     def get_all_images():
         Qr = None

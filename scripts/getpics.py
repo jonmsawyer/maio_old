@@ -13,6 +13,8 @@ from django.conf import settings
 
 from app.models import File
 
+import getpics_config
+
 mimetype_extension = {
     'image': {
         'image/gif': '.gif',
@@ -109,7 +111,19 @@ for root, subdirs, files in os.walk(directory):
         truncated = False
         try:
             im = Image.open(file_path)
+            if getpics_config.MIN_INCLUSIVE.lower() == 'and':
+                if im.size[0] < getpics_config.MIN_WIDTH or \
+                   im.size[1] < getpics_config.MIN_HEIGHT:
+                    continue
+            elif getpics_config.MIN_INCLUSIVE.lower() == 'or':
+                if im.size[0] < getpics_config.MIN_WIDTH and \
+                   im.size[1] < getpics_config.MIN_HEIGHT:
+                    continue
+            else:
+                pass
             im.load()
+            if im.mode != "RGB":
+                im = im.convert("RGB")
         except IOError as e:
             print 'Error in processing %s ...' % (file_path,),
             if 'truncated' in str(e):

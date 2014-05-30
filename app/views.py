@@ -2,6 +2,9 @@ import json
 import base64
 import pickle
 import random
+import logging
+import inspect
+import time
 
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
@@ -10,7 +13,13 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from app.models import File
 
+logger = logging.getLogger(__name__)
+
+def __log_info(txt):
+    logger.info('%.6f %s' % (time.time(), txt))
+
 def __store_session_query(request, query_set):
+    #    if 'current_query' in request.session and request.session['current_query'] != None:
     request.session['current_query'] = pickle.dumps(query_set.query)
     return query_set
 
@@ -18,6 +27,22 @@ def __load_session_query(request, query_set):
     current_query = request.session['current_query']
     query_set.query = pickle.loads(str(current_query))
     return query_set
+
+def __set_session_id_list(request, query, id=None):
+    id_list = list(query.values_list('id', flat=True))
+    request.session['id_list'] = id_list
+    return request.session['id_list']
+
+def __load_session_id_list(request, query, id=None):
+    try:
+        id_list = request.session['id_list']
+    except KeyError as e:
+        id_list = __set_session_id_list(request, query, id)
+    return id_list
+
+def __reload_session_id_list(request, query, id=None):
+    id_list = __set_session_id_list(request, query, id)
+    return id_list
 
 def __load_random_list(request, query):
     try:
@@ -58,6 +83,10 @@ def images_index(request):
     query = __store_session_query(request, File.get_all_images())
     try:
         del request.session['random_list']
+    except KeyError:
+        pass
+    try:
+        del request.session['id_list']
     except KeyError:
         pass
     per_page = 24
@@ -135,7 +164,9 @@ def images_rate(request, id, rating):
 
 def images_getthis(request, id):
     query = __load_session_query(request, File.objects.all())
-    id_list = list(query.values_list('id', flat=True))
+    id_list = __load_session_id_list(request, query, id)
+    if not id in id_list:
+        id_list = __reload_session_id_list(request, query, id)
     obj = File.objects.get(id=id)
     try:
         rating = int(obj.rating)
@@ -205,7 +236,7 @@ def images_unset_random(request):
 
 def images_getnext(request, id):
     query = __load_session_query(request, File.objects.all())
-    id_list = list(query.values_list('id', flat=True))
+    id_list = __load_session_id_list(request, query, id)
     try:
         next_id = id_list[id_list.index(id) + 1]
         number = id_list.index(id) + 2
@@ -226,7 +257,7 @@ def images_getnext(request, id):
 
 def images_getprev(request, id):
     query = __load_session_query(request, File.objects.all())
-    id_list = list(query.values_list('id', flat=True))
+    id_list = __load_session_id_list(request, query, id)
     try:
         next_id = id_list[id_list.index(id) - 1]
         number = id_list.index(id)
