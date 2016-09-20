@@ -8,18 +8,29 @@ So far, Maio has only been developed and installed on Linux. Official Windows an
 
 ### Get Django!
 
-`$ sudo pip install Django==1.5.4` (or latest, or download the source, etc). Also see https://www.djangoproject.com/download/
+`$ sudo pip install Django==1.5.4`
+
+Also see https://www.djangoproject.com/download/
 
 ### Get Dependencies!
 
  * Python-Magic: `$ sudo pip install python-magic` - for mime type calculations
- * Python Imaging Library: `$ sudo pip install PIL` - for image manipulation
+ * Python Imaging Library: `$ sudo pip install pillow` - for image manipulation
  * MySQL-Python: `$ sudo pip install MySQL-python` - for MySQL (if you choose to use it)
  * psycopg2: `$ sudo pip install psycopg2` - for PostgreSQL (if you choose to use it)
  * pysqlite: `$ sudo pip install pysqlite` - for SQLite3 (if you choose to use it)
 
-You will also need:
+#### In One Line
+ * PostgreSQL: `sudo pip install psycopg2 python-magic pillow`
+ * MySQL: `sudo pip install MySQL-python python-magic pillow`
+ * SQLite3: `sudo pip install pysqlite python magic pillow`
 
+#### Using PIP's Requirements File (Assumes PostgreSQL)
+ * `cd /path/to/maio`
+ * `pip install -r scripts/requirements.pip`
+   * To use a different database, edit this requirements file and change it to the appropriate database of your choice using the databases listed above.
+
+#### You will also need ####
  * MySQL if you are going to use MySQL
  * PostgreSQL if you are going to use PostgreSQL
  * SQLite3 if you are going to use SQLite3
