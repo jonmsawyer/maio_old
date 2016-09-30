@@ -1,0 +1,70 @@
+# nginx.conf
+
+# The uWSGI upstream component that nginx needs to connect to
+upstream maio_django {
+  # For a file socket:
+  server unix:///var/run/uwsgi/maio_uwsgi.sock;
+}
+
+# Server config
+server {
+  ##
+  # Listen
+  ##
+  # Use the following two directives if Maio
+  listen                     80;                       # Adjust to taste
+  listen                     [::]:80;                  # Support ipv6, adjust to taste
+  listen                     443 ssl http2;            # Adjust to taste
+  listen                     [::]:443 ssl http2;       # Support ipv6, adjust to taste
+  server_name                maio.example.com;         # Substitute your machine's IP address or FQDN
+  ssl_certificate            /etc/nginx/cert/ssl.crt;  # Substitute your SSL cert
+  ssl_certificate_key        /etc/nginx/cert/ssl.key;  # Substitute your SSL key
+  ssl_session_cache          shared:SSL:1m;
+  ssl_session_timeout        1h;
+  ssl_prefer_server_ciphers  on;
+  ssl_ciphers                EECDH+CHACHA20:EECDH+AES128:RSA+AES128:EECDH+AES256:RSA+AES256:EECDH+3DES:RSA+3DES:!MD5;
+  root                       /path/to/maio/filestore/htdocs;
+  charset                    utf-8;
+  client_max_body_size       110M;                     # Adjust to taste
+
+  ##
+  # Logging
+  ##
+  # Logging filename convention: {webserver or website name}_[access,error].log
+  access_log                 /path/to/maio/logs/nginx_access.log;
+  error_log                  /path/to/maio/logs/nginx_error.log warn;
+
+  ##
+  # Authentication
+  ##
+  # Uncomment the following two lines if your site needs authentication
+  #auth_basic                 "Please authenticate in order to access Maio";
+  #auth_basic_user_file       /path/to/maio/conf/maio.auth;
+
+  # Redirect from any unsecured port to using SSL port 443
+  if ($ssl_protocol = "") {
+    rewrite                  ^  https://$server_name$request_uri? permanent;
+  }
+
+  # Django uploaded media (a la MEDIA_ROOT setting)
+  location /media  {
+    alias                    /path/to/maio/filestore/media;
+  }
+
+  # Django collected static files (a la STATIC_ROOT setting)
+  location /static {
+    alias                    /path/to/maio/filestore/static;
+  }
+
+  # Maio default media directory with images, audio, and video
+  location /filestore/maio_media {
+    alias                    /path/to/maio/filestore/maio_media;
+  }
+
+  # Finally, send all non-asset requests to the Django server
+  location / {
+    uwsgi_pass               maio_django;
+    include                  /etc/nginx/uwsgi_params; # the uwsgi_params file supplied by uWSGI
+  }
+}
+

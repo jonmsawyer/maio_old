@@ -1,0 +1,73 @@
+# maio_uwsgi.ini file
+[uwsgi]
+
+# chdir
+#   uWSGI will change to Maio's base directory. This needs to be the absolute path.
+chdir           = /path/to/maio
+
+# module
+#   Set this to Maio's wsgi file. Default value is maio.wsgi
+module          = maio.wsgi
+
+# home
+#   The full path to the python virtualenv for Maio.
+home            = /path/to/virtualenvs/maio
+
+# master
+#   Whether or not to make this the master process (spawns new process)
+master          = True
+
+# processes
+#   Set this to be the maximum number of worker processes.
+#processes       = 5
+
+# uid
+#   Set this to be the user that uWSGI will assign to this process.
+uid             = maio_uwsgi
+
+# gid
+#   Set this to be the group that uWSGI will assign to this process.
+gid             = nginx
+
+# max-requests
+#   Set this to be the maximum number of requests that Maio will suppoert.
+max-requests    = 100
+
+# touch-reload
+#   In development, touching this file will trigger uWSGI to reload Maio, picking up new changes
+#   to your environment.
+touch-reload    = /path/to/maio/scripts/reload_maio
+
+# socket
+#   Set this to the absolute path where uWSGI should create the socket.
+socket = /var/run/uwsgi/%n.sock
+
+# pidfile
+#   Set this to the absollute path where uWSGI should create the PID file.
+pidfile = /var/run/uwsgi/%n.pid
+
+# logto
+#   Set this to the absolute path where uWSGI should write log information.
+logto = /var/log/uwsgi/%n.log
+
+# chmod-socket
+#   Set this to the tripple octet you wish uWSGI to assign as file permissions.
+chmod-socket = 660
+
+# vacuum
+#   Whether or not to perform some cleanup when uWSGI stops.
+vacuum = True
+
+# enable-threads
+#   Whether or not to enable threads.
+enable-threads = True
+
+# threads
+#   Set this to the number of threads you with uWSGI to use when enable-threads is set to True.
+threads = 5
+
+# harikiri
+#   Set this to the number of seconds uWSGI must wait before killing a stale or unresponsive uWSGI
+#   process (this usually occurs if there's an unhandled Error within Maio itself).
+harakiri = 20
+

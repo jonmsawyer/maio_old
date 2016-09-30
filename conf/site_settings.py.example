@@ -1,0 +1,209 @@
+# file: site_settings.py
+
+"""
+Rename this file to `site_settings.py` and configure the options below.
+
+IN A PRODUCTION ENVIRONMENT:
+
+IT IS HIGHLY RECOMMENDED THAT BASE_DIR/maio/settings.py AND THIS FILE BE OWNER AND GROUP READABLE
+WITH GLOBAL READ AND WRITE AND EXECUTE DISABLED.
+
+To do this, set the owner to be you (or root if you can) and set the group to the user that will
+run the uWSGI process that runs Maio.
+
+In *nix:
+  $ cd /path/to/maio
+  $ sudo chown yourusername:maio_uwsgi ./conf/site_settings.py ./maio/settings.py
+  $ sudo chmod 640 ./conf/site_settings.py ./maio/settings.py
+  # And while you're at it, here's a gentle reminder:
+  $ sudo chown yourusername:maio_uwsgi ./logs/ \
+                                       ./filestore/media/ \
+                                       ./filestore/maio_media/ \
+                                       ./filestore/maio_media/images/ \
+                                       ./filestore/maio_media/audio/ \
+                                       ./filestore/maio_media/video/ \
+                                       ./filestore/session/ \
+                                       ./filestore/thumbnails/
+  $ sudo chmod 770 ./logs/ \
+                   ./filestore/media/ \
+                   ./filestore/maio_media/ \
+                   ./filestore/maio_media/images/ \
+                   ./filestore/maio_media/audio/ \
+                   ./filestore/maio_media/video/ \
+                   ./filestore/session/ \
+                   ./filestore/thumbnails/
+"""
+
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+##########################################################
+# Edit the settings below for your installation of Maio. #
+##########################################################
+
+# DEBUG
+#   Set this to True if you want to to get detailed diagnostic information during errors.
+#   Set this to False on to disable debug output. SET DEBUG TO FALSE IN A PRODUCTION ENVIRONMENT!
+#
+# Default:
+#DEBUG = False
+DEBUG = False
+
+# ADMINS
+#   This is a tuple of 2-tuples containing the admins of Maio. The two parameters are the name of
+#   the admin and their email address. When exceptions are thrown in Django or Python, admins
+#   will receive an email about the error. Comment out ADMINS configuration to disable this.
+#
+# Default:
+#ADMINS = (('admin', 'admin@example.com'),)
+ADMINS = (('admin', 'admin@example.com'),)
+
+# DATABASES
+#   This is a dictionary with an item named 'default' with the value of a dictionary containing
+#   the various configuration options to connect to the database. A database is required to run
+#   Maio. Maio was designed to work with every database that Django supports, so your
+#   database MUST be compatible with Django. Please consult the Django documentation on setting
+#   this config properly for Django version 1.5.11.
+#
+# Default:
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',             # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#        'NAME': os.path.join(BASE_DIR, 'db', 'maio.db'),    # Or path to database file if using sqlite3.
+#        # The following settings are not used with sqlite3:
+#        'USER': 'change_me',
+#        'PASSWORD': 'change_me',
+#        'HOST': 'localhost',                                # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+#        'PORT': '',                                         # Set to empty string for default.
+#        'OPTIONS': {'autocommit': True,},
+#    }
+#}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',             # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': os.path.join(BASE_DIR, 'db', 'maio.db'),    # Or path to database file if using sqlite3.
+        # The following settings are not used with sqlite3:
+        'USER': 'change_me',
+        'PASSWORD': 'change_me',
+        'HOST': 'localhost',                                # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '',                                         # Set to empty string for default.
+        'OPTIONS': {'autocommit': True,},
+    }
+}
+
+# ALLOWED_HOSTS
+#   Hosts/domain names that are valid for this site; required if DEBUG is False.
+#   See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
+#
+# Default:
+#ALLOWED_HOSTS = ['maio.example.com', 'www.maio.example.com', 'secure.maio.example.com'] # Add or remove domains or IPs as needed
+ALLOWED_HOSTS = ['maio.jonmsawyer.com', 'maio-dev.jonmsawyer.com'] # Add or remove domains or IPs as needed
+
+# TIME_ZONE
+#   Local time zone for this installation. Choices can be found here:
+#   http://en.wikipedia.org/wiki/List_of_tz_zones_by_name although not all choices may be available
+#   on all operating systems. In a Windows environment this must be set to your system time zone.
+#   Set to None to use system timezone, however, this is discouraged when USE_TZ = True, because it
+#   makes conversions between local time and UTC less reliable.
+#
+# Default:
+#TIME_ZONE = 'America/Anchorage'
+TIME_ZONE = 'America/Anchorage'
+
+# SECRET_KEY
+#   Make this unique, and don't share it with anyone. This is a 50 character random string that is
+#   used as this Maio's encryption key. To quickly generate a pseudorandom SECRET_KEY, use the
+#     python manage.py maio_gensecretkey
+#   command and copy the output and paste it here. DO NOT use any SECRET_KEY found online, or in
+#   the Maio source code.
+#
+# Default:
+#SECRET_KEY = 'change_me'
+SECRET_KEY = '|~rTuK,GmClxRMmzq:)$:En{w$9Lpj$CubUkLeX?hib[eQHM6+5'
+
+# CACHES
+#   If you have memcached installed, uncomment CACHES below and edit the LOCATION option to reflect
+#   your setup. Only use this setting if you know what you're doing.
+#
+# Default:
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#        'LOCATION': '127.0.0.1:11211',
+#        'TIMEOUT': 60*60*24*31,
+#    }
+#}
+
+# MAIO_SETTINGS
+#   This is the dictionary that maintains Maio's default settings. The settings are the following:
+#
+#     'thumbnail_directory':  Type: string. Set this to the filesystem path where Maio's generated
+#                             thumbnails will be stored. This setting is required. Default is
+#                               os.path.join(BASE_DIR, 'filestore', 'thumbnails')
+#
+#     'media_directory':      Type: string. Set this to the filesystem path where Maio's root
+#                             media directory is located. Maio is required to have write access
+#                             to this directory and its contents. Default is
+#                               os.path.join(BASE_DIR, 'filestore', 'media')
+#
+#     'images_directory':     Type: string. Set this to the filesystem path where Maio will copy
+#                             imported images to. To disable this setting, either remove this
+#                             entry from the configuration dictionary or set the value to None.
+#                             Disabling this setting will force Maio to use the original file
+#                             location path as part of the generated metadata. If this path is on
+#                             a separate partition than where Maio is installed, there's a good
+#                             chance the image files will be unavailable at some point and Maio
+#                             will be trying to serve orphaned images. Maio's default value is
+#                               os.path.join(BASE_DIR, 'filestore', 'media', 'images')
+#                             (Also, this setting is just a stub right now and will be enabled
+#                             in the next release of Maio.)
+#
+#     #####################################
+#     # Minimum width and height settings #
+#     #####################################
+#
+#     When used together, Maio will not save a database entry for a given picture if the picture's
+#     dimensions (width x height) do not meet the minimum requirements. When 'images_min_inclusive'
+#     is set to 'AND', then Maio will strictly check to see if the image meets both
+#     'images_min_width' and 'images_min_height' settings. When 'images_min_inclusive' is set to
+#     'OR', then Maio will check to see if the image meets either 'images_min_width' or
+#     'images_min_height' settings.
+#
+#     'images_min_width':     Type: integer. The number of minimum pixels wide to be considered a
+#                             picture Maio will get. Set 'images_min_width' to None for infinite
+#                             width. Default is 200.
+#                             Example:
+#                               'images_min_width' = None  # Infinite
+#                               'images_min_width' = 200  # 200 pixels wide
+#
+#     'images_min_height':    Type: integer. The number of minimum pixels high to be considered a
+#                             picture Maio will get. Set 'images_min_height' to None for infinite
+#                             height. Default is 200.
+#                             Example:
+#                               'images_min_height' = None  # Infinite
+#                               'images_min_height' = 200  # 200 pixels high
+#
+#     'images_min_inclusive': Type: string. Set to 'OR' if you wish Maio to check for either a
+#                             minimum width or a minimum height. Set to 'AND' if you wish Maio to
+#                             check for strictly minimum width and minimum height.
+#                             Default is 'OR'.
+#
+# Default:
+#MAIO_SETTINGS = {
+#    'thumbnail_directory': os.path.join(BASE_DIR, 'filestore', 'thumbnails'),
+#    'media_directory': os.path.join(BASE_DIR, 'filestore', 'media'),
+#    'images_directory': os.path.join(BASE_DIR, 'filestore', 'media', 'images'),
+#    'images_min_width': 200,
+#    'images_min_height': 200,
+#    'images_min_inclusive': 'OR',
+#}
+MAIO_SETTINGS = {
+    'thumbnail_directory': os.path.join(BASE_DIR, 'filestore', 'thumbnails'),
+    'media_directory': os.path.join(BASE_DIR, 'filestore', 'maio_media'),
+    'images_directory': os.path.join(BASE_DIR, 'filestore', 'maio_media', 'images'),
+    'images_min_width': 200,
+    'images_min_height': 200,
+    'images_min_inclusive': 'OR',
+}
+
+

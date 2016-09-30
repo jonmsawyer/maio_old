@@ -10,10 +10,8 @@ from PIL import Image
 
 import django
 from django.conf import settings
-
+MAIO_SETTINGS = settings.MAIO_SETTINGS
 from app.models import File
-
-import getpics_config
 
 mimetype_extension = {
     'image': {
@@ -111,13 +109,13 @@ for root, subdirs, files in os.walk(directory):
         truncated = False
         try:
             im = Image.open(file_path)
-            if getpics_config.MIN_INCLUSIVE.lower() == 'and':
-                if im.size[0] < getpics_config.MIN_WIDTH or \
-                   im.size[1] < getpics_config.MIN_HEIGHT:
+            if MAIO_SETTINGS.get('images_min_inclusive', '').lower() == 'and':
+                if im.size[0] < MAIO_SETTINGS.get('images_min_width', 0) or \
+                   im.size[1] < MAIO_SETTINGS.get('images_min_height', 0):
                     continue
-            elif getpics_config.MIN_INCLUSIVE.lower() == 'or':
-                if im.size[0] < getpics_config.MIN_WIDTH and \
-                   im.size[1] < getpics_config.MIN_HEIGHT:
+            elif MAIO_SETTINGS.get('images_min_inclusive', '').lower() == 'or':
+                if im.size[0] < MAIO_SETTINGS.get('images_min_width', 0) and \
+                   im.size[1] < MAIO_SETTINGS.get('images_min_height', 0):
                     continue
             else:
                 pass

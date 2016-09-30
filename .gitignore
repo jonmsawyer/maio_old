@@ -1,6 +1,17 @@
 # folders
 logs
 session
+filestore/thumbnails/*
+filestore/static/*
+filestore/media/*
+filestore/maio_media/*
+filestore/mail_media/images/*
+filestore/mail_media/audio/*
+filestore/mail_media/video/*
+conf/*.py
+conf/*.conf
+conf/*.auth
+conf/*.ini
 
 *.py[cod]
 *.swp
