@@ -8,7 +8,7 @@ So far, Maio has only been developed and installed on Linux. Official Windows an
 
 ### Get Django
 
-`$ sudo pip install Django==1.5.4`
+`$ sudo pip install Django==1.5.12`
 
 Also see https://www.djangoproject.com/download/
 
