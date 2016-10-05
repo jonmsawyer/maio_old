@@ -3,40 +3,40 @@
 
 # chdir
 #   uWSGI will change to Maio's base directory. This needs to be the absolute path.
-chdir           = /path/to/maio
+chdir = /path/to/maio
 
 # module
 #   Set this to Maio's wsgi file. Default value is maio.wsgi
-module          = maio.wsgi
+module = maio.wsgi
 
 # home
 #   The full path to the python virtualenv for Maio.
-home            = /path/to/virtualenvs/maio
+home = /path/to/virtualenvs/maio
 
 # master
 #   Whether or not to make this the master process (spawns new process)
-master          = True
+master = True
 
 # processes
 #   Set this to be the maximum number of worker processes.
-#processes       = 5
+#processes = 5
 
 # uid
 #   Set this to be the user that uWSGI will assign to this process.
-uid             = maio_uwsgi
+uid = maio_uwsgi
 
 # gid
 #   Set this to be the group that uWSGI will assign to this process.
-gid             = nginx
+gid = maio_uwsgi
 
 # max-requests
 #   Set this to be the maximum number of requests that Maio will suppoert.
-max-requests    = 100
+max-requests = 100
 
 # touch-reload
 #   In development, touching this file will trigger uWSGI to reload Maio, picking up new changes
 #   to your environment.
-touch-reload    = /path/to/maio/scripts/reload_maio
+touch-reload = /path/to/maio/scripts/reload_maio
 
 # socket
 #   Set this to the absolute path where uWSGI should create the socket.
@@ -70,4 +70,12 @@ threads = 5
 #   Set this to the number of seconds uWSGI must wait before killing a stale or unresponsive uWSGI
 #   process (this usually occurs if there's an unhandled Error within Maio itself).
 harakiri = 20
+
+# post-buffer
+#   Setting harakiri above and not enabling post-buffer could slow things down. 
+post-buffer = True
+
+# thunder-lock
+#   Enable thunder-lock
+thunder-lock = True
 

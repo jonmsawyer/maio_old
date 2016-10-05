@@ -11,7 +11,9 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+import maio
 from app.models import File
+from app.context import pre_populate_context_dict, post_populate_context_dict
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +60,7 @@ def __load_random_list(request, query):
     return id_list
 
 def home(request):
-    context = {}
+    context = pre_populate_context_dict()
     return render(request, 'home.html', context)
 
 def get_file(request, id=None, tn=None):
@@ -80,6 +82,7 @@ def get_file(request, id=None, tn=None):
     return response
 
 def images_index(request):
+    context = pre_populate_context_dict()
     query = __store_session_query(request, File.get_all_images())
     try:
         del request.session['random_list']
@@ -135,16 +138,18 @@ def images_index(request):
         f.num = i
         i = i + 1
 
-    context = {'files': files, 'page_range': page_range}
+    context['files'] = files
+    context['page_range'] = page_range
     if request.GET.get('view') == 'list':
         context['view'] = 'list'
     return render(request, 'images/index.html', context)
 
 def images_view(request, id=None):
+    context = pre_populate_context_dict()
     if not id:
-        return render(request, 'images/view.html', {})
+        return render(request, 'images/view.html', context)
     image = File.objects.get(pk=id)
-    context = {'image': image}
+    context['image'] = image
     return render(request, 'images/view.html', context)
 
 def images_rate(request, id, rating):
