@@ -12,8 +12,8 @@ from django.http import HttpResponse, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 import maio
-from app.models import File
-from app.context import pre_populate_context_dict, post_populate_context_dict
+from maio_core.models import File
+from maio_core.context import pre_populate_context_dict, post_populate_context_dict
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +27,11 @@ def __store_session_query(request, query_set):
 
 def __load_session_query(request, query_set):
     current_query = request.session['current_query']
-    query_set.query = pickle.loads(str(current_query))
+    query_set.query = pickle.loads(current_query)
     return query_set
 
 def __set_session_id_list(request, query, id=None):
-    id_list = list(query.values_list('id', flat=True))
+    id_list = [str(x) for x in list(query.values_list('id', flat=True))]
     request.session['id_list'] = id_list
     return request.session['id_list']
 
@@ -56,6 +56,7 @@ def __load_random_list(request, query):
             rand_max = len(ob_list)
             rand_min = 0
             id_list.append(ob_list.pop(random.randrange(rand_min, rand_max)))
+        id_list = [str(x) for x in id_list]
         request.session['random_list'] = id_list
     return id_list
 
@@ -172,14 +173,15 @@ def images_getthis(request, id):
     id_list = __load_session_id_list(request, query, id)
     if not id in id_list:
         id_list = __reload_session_id_list(request, query, id)
+    id_list = [str(x) for x in id_list]
     obj = File.objects.get(id=id)
     try:
         rating = int(obj.rating)
     except TypeError:
         rating = 0
     context = {
-        'id': id,
-        'number': id_list.index(id) + 1,
+        'id': str(id),
+        'number': id_list.index(str(id)) + 1,
         'count': len(id_list),
         'name': obj.file_path.split('/')[-1],
         'rating': rating,
@@ -201,7 +203,7 @@ def images_getrandom_next(request, id):
 
     obj = File.objects.get(id=next_id)
     context = {
-        'id': obj.id,
+        'id': str(obj.id),
         'number': number,
         'count': len(id_list),
         'name': obj.file_path.split('/')[-1],
@@ -222,7 +224,7 @@ def images_getrandom_prev(request, id):
 
     obj = File.objects.get(id=next_id)
     context = {
-        'id': obj.id,
+        'id': str(obj.id),
         'number': number,
         'count': len(id_list),
         'name': obj.file_path.split('/')[-1],
@@ -235,8 +237,8 @@ def images_unset_random(request):
         del request.session['random_list']
     except KeyError:
         pass
-    msg = {'ok': 'deleted random list'}
-    response = HttpResponse(json.dumps(msg), content_type='application/json')
+    context = {'ok': 'deleted random list'}
+    response = HttpResponse(json.dumps(context), content_type='application/json')
     return response
 
 def images_getnext(request, id):
@@ -245,14 +247,14 @@ def images_getnext(request, id):
     try:
         next_id = id_list[id_list.index(id) + 1]
         number = id_list.index(id) + 2
-    except IndexError:
+    except IndexError, ValueError:
         # does not take into account a list of size 0, todo: test!
         next_id = id_list[0]
         number = 1
 
     obj = File.objects.get(id=next_id)
     context = {
-        'id': obj.id,
+        'id': str(obj.id),
         'number': number,
         'count': len(id_list),
         'name': obj.file_path.split('/')[-1],
@@ -273,7 +275,7 @@ def images_getprev(request, id):
 
     obj = File.objects.get(id=next_id)
     context = {
-        'id': obj.id,
+        'id': str(obj.id),
         'number': number,
         'count': len(id_list),
         'name': obj.file_path.split('/')[-1],

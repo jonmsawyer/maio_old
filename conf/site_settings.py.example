@@ -63,12 +63,12 @@ ADMINS = (('admin', 'admin@example.com'),)
 #   the various configuration options to connect to the database. A database is required to run
 #   Maio. Maio was designed to work with every database that Django supports, so your
 #   database MUST be compatible with Django. Please consult the Django documentation on setting
-#   this config properly for Django version 1.5.11.
+#   this config properly for Django version 1.10.x.
 #
 # Default:
 #DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',             # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#        'ENGINE': 'django.db.backends.sqlite3',             # Add 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 #        'NAME': os.path.join(BASE_DIR, 'db', 'maio.db'),    # Or path to database file if using sqlite3.
 #        # The following settings are not used with sqlite3:
 #        'USER': 'change_me',
@@ -80,7 +80,7 @@ ADMINS = (('admin', 'admin@example.com'),)
 #}
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',             # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.sqlite3',             # Add 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': os.path.join(BASE_DIR, 'db', 'maio.db'),    # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'change_me',
@@ -93,7 +93,7 @@ DATABASES = {
 
 # ALLOWED_HOSTS
 #   Hosts/domain names that are valid for this site; required if DEBUG is False.
-#   See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
+#   See https://docs.djangoproject.com/en/1.10/ref/settings/#allowed-hosts
 #
 # Default:
 #ALLOWED_HOSTS = ['maio.example.com', 'www.maio.example.com', 'secure.maio.example.com'] # Add or remove domains or IPs as needed

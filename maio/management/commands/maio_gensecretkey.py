@@ -1,18 +1,19 @@
 from random import choice
 from string import printable
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import CommandError
 
-class MaioBaseCommand(BaseCommand):
-    args = '<None>'
-    help = 'Extend MaioBaseCommand into a Command class to create a command for use in manage.py'
+from maio.management.commands._base import MaioBaseCommand
 
-    def _print(self, *args, **kwargs):
-        self.stdout.write(' '.join(args))
 
 class Command(MaioBaseCommand):
     args = '<None>'
     help = 'Generates a pseudorandom SECRET_KEY for use in conf/site_settings.py'
 
-    def handle(self, num_chars=50, *args, **kwargs):
-        self._print("SECRET_KEY = '%s'" % (''.join([choice(printable[:-6]) for x in xrange(0, int(num_chars))]).replace("'", "\\'"),))
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('num_chars', nargs='+', type=int)
+
+    def handle(self, *args, **kwargs):
+        num_chars = int(kwargs.get('num_chars', 50))
+        self.out("SECRET_KEY = '%s'" % (''.join([choice(printable[:-6]) for x in xrange(0, int(num_chars))]).replace("'", "\\'"),))

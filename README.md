@@ -8,7 +8,7 @@ So far, Maio has only been developed and installed on Linux. Official Windows an
 
 ### Get Django
 
-`$ sudo pip install Django==1.5.12`
+`$ sudo pip install Django>=1.10`
 
 Also see https://www.djangoproject.com/download/
 
@@ -51,12 +51,16 @@ $ git clone https://github.com/jonmsawyer/maio.git
 
  * Using one of `MySQL`, `PostgreSQL`, or `SQLite3`: Create the database, user, and password for
    Maio.
- * Change settings.py:
 
-~~~
+### Edit your config
+
+ * Rename `conf/site_settings.py.example` to `conf/site_settings.py`
+ * Edit `conf/site_settings.py` and read each configuration parameter carefully
+ * Besure to set your `DATABASES` attribute:
+```python
 DATABASES = {
   'default': {
-    'ENGINE': 'django.db.backends.postgresql_psycopg2', # or 'mysql', or 'sqlite3'.
+    'ENGINE': 'django.db.backends.postgresql', # or 'mysql', or 'sqlite3'.
     'NAME': 'maio', # Or path to database file if using sqlite3.
     'USER': 'maio',
     'PASSWORD': 'maio', # Change this password
@@ -64,48 +68,50 @@ DATABASES = {
     'PORT': '',
   }
 }
-~~~
-
-Change the to the database driver, username, and password you have set for yourself. DON'T USE
-THESE SETTINGS ON A PRODUCTION WEB SERVER!
+```
+   Change the to the database driver, username, and password you have set for yourself.
+   DON'T USE THESE SETTINGS ON A PRODUCTION WEB SERVER!
 
  * Change the secret key:
 
-~~~
+```python
 SECRET_KEY = '+&-8p_beejspfe!8#b_q&eiw%zw-^_96^h=3gvt7%_^9m$z+=a'
-~~~
+```
+   * Hint: use `./manage.py maio_gensecretkey` for a quick `SECRET_KEY`
 
 Change this to something else. DON'T USE THIS KEY ON A PRODUCTION WEB SERVER!
 
- * Change the Maio base directory path (this directory must be writable by the user of the web
-   server or process that Maio runs as):
+ * Change the Maio-specific settings:
 
-~~~
+```python
 MAIO_SETTINGS = {
-  'base_directory': '/home/User/maio',
+    'thumbnail_directory': os.path.join(BASE_DIR, 'filestore', 'thumbnails'),
+    'media_directory': os.path.join(BASE_DIR, 'filestore', 'maio_media'),
+    'images_directory': os.path.join(BASE_DIR, 'filestore', 'maio_media', 'images'),
+    'images_min_width': 200,
+    'images_min_height': 200,
+    'images_min_inclusive': 'OR',
 }
-~~~
+```
+
+Note: Make sure the webserver or uWSGI process owner has read/write access to the directories
+listed in `MAIO_SETTINGS`.
 
 ### Sync the database tables
 
  * Now run a Django command to create Maio's database structure:
 
-~~~
+```bash
 $ cd ~/maio
 $ ./manage.py migrate
-~~~
+```
 
 ### Get images (audio and video are not supported yet)
 
-This should be the same directory as you have configured above in your
-`MAIO_SETTINGS['base_directory']` setting.
-
- * Get the images
-
-~~~
+```bash
 $ cd ~/maio
 $ ./scripts/getpics.py ~/Pictures
-~~~
+```
 
 ### Run the server
 
@@ -117,3 +123,4 @@ $ ./manage.py runserver 8080
 ### Run Maio
 
 In your browser, go to http://maio.hostname.local:8080/ and enjoy!
+

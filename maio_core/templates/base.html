@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -7,20 +7,20 @@
     <meta name="description" content="Maio: Media All-in-One">
     <meta name="author" content="Jonathan Sawyer &lt;jonmsawyer(@)gmail.com&gt;">
     <meta name="contributors" content="Travis Veazey &lt;travis(@)kromey.us&gt;">
-    <link rel="shortcut icon" href="{{ STATIC_URL }}ico/favicon.png">
+    <link rel="shortcut icon" href="{% static 'ico/favicon.png' %}">
 
     <title>Maio: Media All-in-One</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="{{ STATIC_URL }}css/bootstrap-custom.css" rel="stylesheet">
+    <link href="{% static 'css/bootstrap-custom.css' %}" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-      <script src="{{ STATIC_URL }}js/html5shiv.js"></script>
-      <script src="{{ STATIC_URL }}js/respond.min.js"></script>
+      <script src="{% static 'js/html5shiv.js' %}"></script>
+      <script src="{% static 'js/respond.min.js' %}"></script>
     <![endif]-->
 {% block stylesheets %}{% endblock stylesheets %}
 {% block styles %}{% endblock styles %}
@@ -34,8 +34,8 @@
 
 {% include 'footer.html' %}
 
-    <script src="{{ STATIC_URL }}js/jquery.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
 {% block javascripts %}{% endblock javascripts %}
 {% block scripts %}{% endblock scripts %}
   </body>

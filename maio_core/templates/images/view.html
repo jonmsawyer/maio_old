@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block styles %}
 <style>
 html, body { overflow: hidden; }
@@ -448,11 +448,11 @@ $(document).keydown(function(e) {
     </div>
     <div id="star_container">
         <span class="none">None</span>
-        <img class="star gray one selected" src="{{ STATIC_URL }}img/star.png" />
-        <img class="star gray two" src="{{ STATIC_URL }}img/star.png" />
-        <img class="star gray three" src="{{ STATIC_URL }}img/star.png" />
-        <img class="star gray four" src="{{ STATIC_URL }}img/star.png" />
-        <img class="star gray five" src="{{ STATIC_URL }}img/star.png" />
+        <img class="star gray one selected" src="{% static 'img/star.png' %}" />
+        <img class="star gray two" src="{% static 'img/star.png' %}" />
+        <img class="star gray three" src="{% static 'img/star.png' %}" />
+        <img class="star gray four" src="{% static 'img/star.png' %}" />
+        <img class="star gray five" src="{% static 'img/star.png' %}" />
     </div>
     <div id="views_container">
         Views: <span id="img_views">0</span>

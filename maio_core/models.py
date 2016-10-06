@@ -1,7 +1,9 @@
+import uuid
+
 from django.db import models
 from django.db.models import Q
 
-from maiofields import UUIDField
+#from maiofields import UUIDField
 from maiofields import FixedCharField
 
 mimetype_extension = {
@@ -19,7 +21,7 @@ mimetype_extension = {
 }
 
 class Tag(models.Model):
-    id = UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=255, unique=True)
     count = models.PositiveIntegerField(default=0)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -28,7 +30,7 @@ class Tag(models.Model):
     right_node = models.PositiveIntegerField(null=True, blank=True) # for v2
 
 class File(models.Model):
-    id = UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     mime_type = models.CharField(max_length=255)
     size = models.PositiveIntegerField(default=0)
     mtime = models.FloatField()
@@ -66,7 +68,7 @@ class FileCaption(models.Model):
     caption = models.TextField()
 
 class Playlist(models.Model):
-    id = UUIDField(primary_key=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     name = models.CharField(max_length=255)
     date_added = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(null=True)

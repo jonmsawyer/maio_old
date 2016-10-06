@@ -2,16 +2,21 @@
 import os
 import sys
 import hashlib
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+
 os.environ['DJANGO_SETTINGS_MODULE'] = 'maio.settings'
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir))
+sys.path.insert(0, BASE_DIR)
 
 import magic
 from PIL import Image
 
-import django
 from django.conf import settings
+import django
+django.setup()
+
+from maio_core.models import File
+
 MAIO_SETTINGS = settings.MAIO_SETTINGS
-from app.models import File
 
 mimetype_extension = {
     'image': {
