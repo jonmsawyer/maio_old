@@ -33,13 +33,13 @@ mimetype_extension = {
 }
 
 def usage():
-    print "Usage:"
-    print ""
-    print "%s DIR" % (sys.argv[0],)
-    print ""
-    print "    DIR"
-    print "    The directory to recursively walk for images to store in the database."
-    print ""
+    print("Usage:")
+    print("")
+    print("%s DIR" % (sys.argv[0],))
+    print("")
+    print("    DIR")
+    print("    The directory to recursively walk for images to store in the database.")
+    print("")
 
 def mk_md5_dir(md5, root):
     if len(md5) == 32:
@@ -54,22 +54,22 @@ def mk_md5_dir(md5, root):
             return dirtomake
 
 def is_image(mimetype):
-    for key, value in mimetype_extension['image'].iteritems():
+    for key, value in mimetype_extension['image'].items():
         if mimetype == key:
             return True
     return False
 
 if len(sys.argv) == 1:
-    print "Please provide a directory to recursively walk for pictures."
-    print ""
+    print("Please provide a directory to recursively walk for pictures.")
+    print("")
     usage()
     exit(1)
 
 directory = sys.argv[1]
 
 if not os.path.isdir(directory):
-    print "\"%s\" is not a valid directory." % (directory,)
-    print ""
+    print("\"%s\" is not a valid directory." % (directory,))
+    print("")
     usage()
     exit(1)
 
@@ -78,10 +78,10 @@ mime = magic.Magic(mime=True)
 for root, subdirs, files in os.walk(directory):
     for filename in files:
         try:
-            file_path = os.path.join(root, filename).decode('utf-8')
+            file_path = os.path.join(root, filename)#.decode('utf-8')
         except UnicodeDecodeError as e:
             if "'utf8' codec can't decode bytes" in str(e):
-                print "Error processing %s, unreadable file name ..." % (os.path.join(root, filename),)
+                print("Error processing %s, unreadable file name ..." % (os.path.join(root, filename),))
                 continue
             else:
                 raise
@@ -93,18 +93,18 @@ for root, subdirs, files in os.walk(directory):
             mimetype = mime.from_file(file_path)
         except IOError as e:
             if 'File does not exist' in str(e):
-                print 'file %s does not exist' % (file_path,)
+                print('file %s does not exist' % (file_path,))
                 continue
             else:
                 raise
         except UnicodeDecodeError as e:
-            print "File: ", file_path
+            print("File: ", file_path)
             raise
         except:
             raise
 
         if not is_image(mimetype):
-            print '%s is not a valid image type... (it might be a symlink?)' % (file_path,)
+            print('%s is not a valid image type... (it might be a symlink?)' % (file_path,))
             continue
 
         # stat file
@@ -128,16 +128,16 @@ for root, subdirs, files in os.walk(directory):
             if im.mode != "RGB":
                 im = im.convert("RGB")
         except IOError as e:
-            print 'Error in processing %s ...' % (file_path,),
+            print('Error in processing %s ...' % (file_path,), end='')
             if 'truncated' in str(e):
-                print 'truncated'
+                print('truncated')
                 truncated = True
                 pass
             elif 'cannot identify image file' in str(e):
-                print 'invalid image file'
+                print('invalid image file')
                 continue
             elif 'No such file or directory' in str(e):
-                print 'no such file or directory'
+                print('no such file or directory')
                 continue
             else:
                 raise
@@ -156,7 +156,7 @@ for root, subdirs, files in os.walk(directory):
             im.thumbnail((128, 128), Image.ANTIALIAS)
             im.save(thumb)
 
-        print md5sum.hexdigest(), mimetype, file_path
+        print(md5sum.hexdigest(), mimetype, file_path)
 
         # save file information to the database
         try:
@@ -170,7 +170,7 @@ for root, subdirs, files in os.walk(directory):
         except django.db.utils.IntegrityError:
             f = File.objects.get(file_path_hash=fph)
             if sfile.st_mtime == f.mtime:
-                print "Already in database and up-to-date, skipping %s ..." % (file_path,)
+                print("Already in database and up-to-date, skipping %s ..." % (file_path,))
                 continue
             f.mime_type = mimetype
             f.size = sfile.st_size

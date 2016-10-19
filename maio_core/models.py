@@ -3,8 +3,8 @@ import uuid
 from django.db import models
 from django.db.models import Q
 
-#from maiofields import UUIDField
-from maiofields import FixedCharField
+from .maiofields import FixedCharField
+
 
 mimetype_extension = {
     'image': {
@@ -50,7 +50,7 @@ class File(models.Model):
     @staticmethod
     def get_all_images():
         Qr = None
-        for key, value in mimetype_extension['image'].iteritems():
+        for key, value in mimetype_extension['image'].items():
             q = Q(**{"mime_type__exact": key})
             if Qr:
                 Qr = Qr | q

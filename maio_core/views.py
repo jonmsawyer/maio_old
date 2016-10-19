@@ -21,12 +21,14 @@ def __log_info(txt):
     logger.info('%.6f %s' % (time.time(), txt))
 
 def __store_session_query(request, query_set):
-    #    if 'current_query' in request.session and request.session['current_query'] != None:
-    request.session['current_query'] = pickle.dumps(query_set.query)
+    query_pickle = pickle.dumps(query_set.query)
+    query_pickle = base64.b64encode(query_pickle).decode('utf-8')
+    request.session['current_query'] = query_pickle
     return query_set
 
 def __load_session_query(request, query_set):
-    current_query = request.session['current_query']
+    current_query = request.session['current_query'].encode('utf-8')
+    current_query = base64.b64decode(current_query)
     query_set.query = pickle.loads(current_query)
     return query_set
 
@@ -111,7 +113,7 @@ def images_index(request):
     threshold_size = (threshold*2) + 1
 
     # build initial page range list
-    for i in xrange(1, paginator.num_pages+1):
+    for i in range(1, paginator.num_pages+1):
         if i+threshold >= page and i <= page:
             page_range.append(i)
         elif i-threshold <= page and i >= page:
@@ -247,7 +249,7 @@ def images_getnext(request, id):
     try:
         next_id = id_list[id_list.index(id) + 1]
         number = id_list.index(id) + 2
-    except IndexError, ValueError:
+    except (IndexError, ValueError):
         # does not take into account a list of size 0, todo: test!
         next_id = id_list[0]
         number = 1
